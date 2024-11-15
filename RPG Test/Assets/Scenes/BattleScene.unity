@@ -398,6 +398,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 284461109}
   m_CullTransparentMesh: 1
+--- !u!1 &593942373 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2277245465896847909, guid: d0284034ea8ef7b44a7601a420c79b17, type: 3}
+  m_PrefabInstance: {fileID: 3906001884238174491}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &612706176
 GameObject:
   m_ObjectHideFlags: 0
@@ -1735,6 +1740,22 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 343157913918040271, guid: d0284034ea8ef7b44a7601a420c79b17, type: 3}
   m_PrefabInstance: {fileID: 3906001884238174491}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1033408345061016684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 593942373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29a488aaa16f707479c065ca1ca3c37d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_color1: {r: 1, g: 0, b: 0, a: 1}
+  m_color2: {r: 1, g: 1, b: 1, a: 1}
+  m_angle: -180
+  m_ignoreRatio: 1
 --- !u!1001 &3906001884238174491
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1824,9 +1845,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 629143701211324308, guid: d0284034ea8ef7b44a7601a420c79b17, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a9cd8337a5dde3442984f0ee8979c5bf, type: 3}
+    - target: {fileID: 629143701211324308, guid: d0284034ea8ef7b44a7601a420c79b17, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 629143701211324308, guid: d0284034ea8ef7b44a7601a420c79b17, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 2100000, guid: b3a33ab7dc72b3b41b7c109e6b31bcef, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 2277245465896847909, guid: d0284034ea8ef7b44a7601a420c79b17, type: 3}
       propertyPath: m_Name
       value: MainFrame
@@ -1919,7 +1948,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5945855309331309475, guid: d0284034ea8ef7b44a7601a420c79b17, type: 3}
       insertIndex: -1
       addedObject: {fileID: 974134707}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2277245465896847909, guid: d0284034ea8ef7b44a7601a420c79b17, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1033408345061016684}
   m_SourcePrefab: {fileID: 100100000, guid: d0284034ea8ef7b44a7601a420c79b17, type: 3}
 --- !u!224 &3906001884238174492 stripped
 RectTransform:
