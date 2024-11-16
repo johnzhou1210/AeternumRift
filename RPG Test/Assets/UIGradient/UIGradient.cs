@@ -8,7 +8,6 @@ public class UIGradient : BaseMeshEffect
 {
     public Color m_color1 = Color.white;
     public Color m_color2 = Color.white;
-    [Range(-180f, 180f)]
     public float m_angle = 0f;
     public bool m_ignoreRatio = true;
 
