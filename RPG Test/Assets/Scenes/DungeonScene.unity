@@ -7809,14 +7809,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1002919241}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.2509804, b: 0.19607845, a: 0}
-  m_RaycastTarget: 1
+  m_Color: {r: 0, g: 0.2509804, b: 0.19607845, a: 1}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -7871,7 +7871,7 @@ CanvasGroup:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1002919241}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Alpha: 0.5
   m_Interactable: 0
   m_BlocksRaycasts: 0
@@ -9473,14 +9473,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1178931775}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.2509804, b: 0.19607845, a: 0}
-  m_RaycastTarget: 1
+  m_Color: {r: 0, g: 0.13962269, b: 0.109080225, a: 0.43137255}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -9517,6 +9517,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerMarker: {fileID: 6801448281931047436, guid: 76d426009e08c4448aa74cbb732be5a4, type: 3}
+  mapMarker: {fileID: 6801448281931047436, guid: 90b4ee7dd1b01764d9477625888b44cf, type: 3}
   fullMapUI: {fileID: 1002919241}
   layoutPrefab: {fileID: 1646123759}
   cellUIPrefab: {fileID: 7868701037509054942, guid: 775116278f34fd84495616eac37e8dc1, type: 3}
@@ -10489,6 +10490,8 @@ MonoBehaviour:
   playerInput: {fileID: 1265525897}
   movementCooldown: 0.4
   uiMapRender: {fileID: 1178931780}
+  uiMapPanSpeed: 5
+  uiMapZoomSpeed: 0.5
 --- !u!114 &1265525897
 MonoBehaviour:
   m_ObjectHideFlags: 0

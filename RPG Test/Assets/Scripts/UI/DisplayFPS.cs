@@ -8,7 +8,7 @@ public class DisplayFPS : MonoBehaviour {
     private float deltaTime = 0f;
 
     private void Awake() {
-        Application.targetFrameRate = 120;
+        Application.targetFrameRate = (int)Mathf.Round((float)Screen.currentResolution.refreshRateRatio.value);
     }
 
     private void OnValidate() {

@@ -16,6 +16,7 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     public static event Action<int> OnUpdatePlayerMarkerRotation;
 
     [SerializeField, Scene] private RenderUIMap uiMapRender;
+    [SerializeField] private float uiMapPanSpeed = 10f, uiMapZoomSpeed = .5f;
 
     private float movementTimer = 0f;
 
@@ -135,15 +136,17 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void OnMapZoomInAction() {
-        uiMapRender.SetScaleOfFullMap(uiMapRender.GetMapScale() + .25f);
+        uiMapRender.SetScaleOfFullMap(uiMapRender.GetMapScale() + (.25f * uiMapZoomSpeed) );
     }
 
     private void OnMapZoomOutAction() {
-        uiMapRender.SetScaleOfFullMap(uiMapRender.GetMapScale() - .25f);
+        uiMapRender.SetScaleOfFullMap(uiMapRender.GetMapScale() - (.25f * uiMapZoomSpeed));
     }
 
     private void OnPanMapAction() {
-        
+        Vector2 inputVal = panMapAction.ReadValue<Vector2>();
+        Vector3 inputVal3D = new(inputVal.x, inputVal.y, 0f);
+        uiMapRender.transform.Find("FullMap").GetComponent<RectTransform>().localPosition -= inputVal3D * uiMapPanSpeed;
     }
 
     private void Update() {
