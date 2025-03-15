@@ -5,6 +5,7 @@ using KBCore.Refs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 public enum WheelAction {
     Attack,
@@ -55,7 +56,6 @@ public class PlayerBattleUIInputManager : MonoBehaviour {
     private void Awake() {
         submitAction = playerInput.actions["Submit"];
         navigateAction = playerInput.actions["Navigate"];
-        playerInput.SwitchCurrentActionMap("UI");
     }
 
     private void Start() { submitAction.performed += OnSubmit; }
@@ -103,6 +103,7 @@ public class PlayerBattleUIInputManager : MonoBehaviour {
     }
 
     private void OnRotateWheelStart() {
+        AudioManager.Instance.PlaySFXAtPointUI(Resources.Load<AudioClip>("Audio/SFX/UI/UI_SELECT"), Random.Range(1.4f,1.6f));
         activeActionHighlight.SetActive(false);
         SetAllWheelItemsInactive();
     }

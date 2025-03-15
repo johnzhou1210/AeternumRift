@@ -5,10 +5,17 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/OutdoorsScene.unity
     guid: 8124e5870f4fd4c779e7a5f994e84ad1
+  - enabled: 1
+    path: Assets/Scenes/DungeonScene.unity
+    guid: 91b5cdadbf6a3d344a77f41f4427d80a
+  - enabled: 1
+    path: Assets/Scenes/BattleScene.unity
+    guid: 5841c430755932f4fbaae5bfa290f8f4
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 551ee0534e1f6914fbe82bbd97172529, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: 18e9fabbf04a35f48b0267a898c55471, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 097e74b788d51e5488e926e929bf8f6d, type: 3}
   m_UseUCBPForAssetBundles: 0

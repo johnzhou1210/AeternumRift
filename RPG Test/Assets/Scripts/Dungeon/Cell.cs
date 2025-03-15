@@ -10,7 +10,7 @@ public enum TerrainType {
 public class Cell {
     public Vector2Int Position { get; private set; }
     public TerrainType Terrain { get; private set; } = TerrainType.None;
-    public bool IsVisited { get; private set; } 
+    public bool IsVisited { get; private set; }
     
     public Cell(int x, int y) {
         Position = new Vector2Int(x, y);
