@@ -7,15 +7,12 @@ public class AudioManager : MonoBehaviour {
     [SerializeField] private AudioSource musicSource;
 
     private void Awake() {
-        if (Instance != null && Instance != this) {
+        if (Instance == null) {
+            Instance = this;
+            Initialize();
+        } else {
             Destroy(gameObject);
-            return;
         }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        Initialize();
     }
 
     private void Initialize() {

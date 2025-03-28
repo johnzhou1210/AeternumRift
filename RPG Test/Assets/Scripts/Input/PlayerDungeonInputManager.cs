@@ -8,6 +8,9 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class PlayerDungeonInputManager : MonoBehaviour {
+    public static PlayerDungeonInputManager Instance;
+    
+    
     [SerializeField, Self] private PlayerInput playerInput;
     [SerializeField] private float movementCooldown = .5f;
     [SerializeField] private Vector2Int minMaxStepsForEncounter = new(15, 30);
@@ -15,7 +18,9 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     private InputAction wasdAction;
     private InputAction strafeLeftAction, strafeRightAction;
     private InputAction mapZoomInAction, mapZoomOutAction, panMapAction, toggleMapViewAction;
-    
+
+    public Transform PlayerTransform { get; private set; }
+
     public static event Action<Vector2Int> OnUpdatePlayerMarkerPosition;
     public static event Action<int> OnUpdatePlayerMarkerRotation;
 
@@ -26,7 +31,6 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     private float movementTimer = 0f, fullMapGridLastSize = 1f;
     private Vector3 minimapLastPosition, fullMapGridLastPosition = Vector3.zero;
     private int stepsUntilEncounter = 0, currentEncounterTotalRequiredSteps;
-
     
     
     private void OnValidate() {
@@ -34,17 +38,24 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void Awake() {
-        wasdAction = playerInput.actions["Move"];
-        strafeLeftAction = playerInput.actions["StrafeLeft"];
-        strafeRightAction = playerInput.actions["StrafeRight"];
-        mapZoomInAction = playerInput.actions["ZoomIn"];
-        mapZoomOutAction = playerInput.actions["ZoomOut"];
-        panMapAction = playerInput.actions["PanMap"];
-        toggleMapViewAction = playerInput.actions["ToggleMapView"];
-        ResetEncounterSteps();
+        if (Instance == null) {
+            Instance = this;
+            wasdAction = playerInput.actions["Move"];
+            strafeLeftAction = playerInput.actions["StrafeLeft"];
+            strafeRightAction = playerInput.actions["StrafeRight"];
+            mapZoomInAction = playerInput.actions["ZoomIn"];
+            mapZoomOutAction = playerInput.actions["ZoomOut"];
+            panMapAction = playerInput.actions["PanMap"];
+            toggleMapViewAction = playerInput.actions["ToggleMapView"];
+            ResetEncounterSteps();
+            
+        } else {
+            Destroy(this);
+        }
     }
 
     private void Start() {
+        PlayerTransform = GameObject.FindWithTag("Player").transform;
         toggleMapViewAction.performed += OnToggleMapView;
     }
 
@@ -85,20 +96,20 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void RotateLeft() {
-        transform.DOLocalRotate(new Vector3(0, transform.rotation.eulerAngles.y - 90, 0), movementCooldown, RotateMode.Fast).OnComplete(OnRotateComplete);
+        PlayerTransform.DOLocalRotate(new Vector3(0, PlayerTransform.rotation.eulerAngles.y - 90, 0), movementCooldown, RotateMode.Fast).OnComplete(OnRotateComplete);
     }
 
     private void RotateRight() {
-        transform.DOLocalRotate(new Vector3(0, transform.rotation.eulerAngles.y + 90, 0), movementCooldown, RotateMode.Fast).OnComplete(OnRotateComplete);
+        PlayerTransform.DOLocalRotate(new Vector3(0, PlayerTransform.rotation.eulerAngles.y + 90, 0), movementCooldown, RotateMode.Fast).OnComplete(OnRotateComplete);
     }
 
     private void MoveForward() {
-        Vector3 positionOfCellInFront = transform.localPosition + transform.forward;
+        Vector3 positionOfCellInFront = PlayerTransform.localPosition + PlayerTransform.forward;
         Vector2Int positionOfCellInFront2D = new (Mathf.RoundToInt(positionOfCellInFront.x), Mathf.RoundToInt(positionOfCellInFront.z));
         Cell cellInFront = GetGrid().GetCellByXY(positionOfCellInFront2D);
         if (cellInFront.Terrain == TerrainType.Floor) {
             FootstepSound();
-            transform.DOLocalMove(positionOfCellInFront, movementCooldown).OnComplete(OnMoveComplete);    
+            PlayerTransform.DOLocalMove(positionOfCellInFront, movementCooldown).OnComplete(OnMoveComplete);    
             // print("Move success! " + positionOfCellInFront2D + " is a " + cellInFront.Terrain + " cell!");
         } else {
             // print("Cannot move forward! " + positionOfCellInFront2D + " is a "+ cellInFront.Terrain +" cell!");
@@ -107,12 +118,12 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void MoveBackward() {
-        Vector3 positionOfCellBehind = transform.localPosition - transform.forward;
+        Vector3 positionOfCellBehind = PlayerTransform.localPosition - PlayerTransform.forward;
         Vector2Int positionOfCellBehind2D = new (Mathf.RoundToInt(positionOfCellBehind.x), Mathf.RoundToInt(positionOfCellBehind.z));
         Cell cellBehind = GetGrid().GetCellByXY(positionOfCellBehind2D);
         if (cellBehind.Terrain == TerrainType.Floor) {
             FootstepSound();
-            transform.DOLocalMove(positionOfCellBehind, movementCooldown).OnComplete(OnMoveComplete);    
+            PlayerTransform.DOLocalMove(positionOfCellBehind, movementCooldown).OnComplete(OnMoveComplete);    
             // print("Move success! " + positionOfCellBehind2D + " is a " + cellBehind.Terrain + " cell!");
         } else {
             // print("Cannot move backward! " + positionOfCellBehind2D + " is a " +cellBehind.Terrain+" cell!");
@@ -121,12 +132,12 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void StrafeLeft() {
-        Vector3 positionOfCellToLeft = transform.localPosition - transform.right;
+        Vector3 positionOfCellToLeft = PlayerTransform.localPosition - PlayerTransform.right;
         Vector2Int positionOfCellToLeft2D = new (Mathf.RoundToInt(positionOfCellToLeft.x), Mathf.RoundToInt(positionOfCellToLeft.z));
         Cell cellToLeft = GetGrid().GetCellByXY(positionOfCellToLeft2D);
         if (cellToLeft.Terrain == TerrainType.Floor) {
             FootstepSound();
-            transform.DOLocalMove(positionOfCellToLeft, movementCooldown).OnComplete(OnMoveComplete);
+            PlayerTransform.DOLocalMove(positionOfCellToLeft, movementCooldown).OnComplete(OnMoveComplete);
             // print("Move success! " + positionOfCellToLeft2D + " is a " + cellToLeft.Terrain + " cell!");
         } else {
             // print("Cannot strafe left! " + positionOfCellToLeft2D + " is a " +cellToLeft.Terrain+" cell!");
@@ -134,12 +145,12 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void StrafeRight() {
-        Vector3 positionOfCellToRight = transform.localPosition + transform.right;
+        Vector3 positionOfCellToRight = PlayerTransform.localPosition + PlayerTransform.right;
         Vector2Int positionOfCellToRight2D = new (Mathf.RoundToInt(positionOfCellToRight.x), Mathf.RoundToInt(positionOfCellToRight.z));
         Cell cellToRight = GetGrid().GetCellByXY(positionOfCellToRight2D);
         if (cellToRight.Terrain == TerrainType.Floor) {
             FootstepSound();
-            transform.DOLocalMove(positionOfCellToRight, movementCooldown).OnComplete(OnMoveComplete);    
+            PlayerTransform.DOLocalMove(positionOfCellToRight, movementCooldown).OnComplete(OnMoveComplete);    
             // print("Move success! " + positionOfCellToRight2D + " is a " + cellToRight.Terrain + " cell!");
         } else {
             // print("Cannot strafe right !" + positionOfCellToRight2D + " is a " +cellToRight.Terrain+" cell!");
@@ -148,7 +159,7 @@ public class PlayerDungeonInputManager : MonoBehaviour {
 
     private void OnMoveComplete() {
         if (OnUpdatePlayerMarkerPosition != null)
-            OnUpdatePlayerMarkerPosition.Invoke(new(Mathf.RoundToInt(transform.localPosition.x), Mathf.RoundToInt(transform.localPosition.z)));
+            OnUpdatePlayerMarkerPosition.Invoke(new(Mathf.RoundToInt(PlayerTransform.localPosition.x), Mathf.RoundToInt(PlayerTransform.localPosition.z)));
         stepsUntilEncounter -= 1;
         if (stepsUntilEncounter <= 0) StartBattle();
         Image minimapImage = minimapContainer.GetComponent<Image>();
@@ -176,8 +187,8 @@ public class PlayerDungeonInputManager : MonoBehaviour {
 
     private void OnRotateComplete() {
         if (OnUpdatePlayerMarkerRotation != null)
-            OnUpdatePlayerMarkerRotation.Invoke(Mathf.RoundToInt(transform.localRotation.eulerAngles.y));
-        print(transform.localRotation.eulerAngles.y);
+            OnUpdatePlayerMarkerRotation.Invoke(Mathf.RoundToInt(PlayerTransform.localRotation.eulerAngles.y));
+        print(PlayerTransform.localRotation.eulerAngles.y);
     }
 
     private void OnMapZoomInAction() {
@@ -223,7 +234,7 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void FootstepSound() {
-        AudioManager.Instance.PlaySFXAtPoint(transform.position, Resources.Load<AudioClip>("Audio/SFX/RIFT/FOOTSTEP_GRASS"));
+        AudioManager.Instance.PlaySFXAtPoint(PlayerTransform.position, Resources.Load<AudioClip>("Audio/SFX/RIFT/FOOTSTEP_GRASS"));
     }
 
     private void Update() {
@@ -260,7 +271,8 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     private void StartBattle() {
         Debug.LogWarning("Battle starts!");
         AudioManager.Instance.PlayMusic(Resources.Load<AudioClip>("Audio/MUSIC/Strife"));
-        SceneManager.LoadSceneAsync(1);
+        SceneManager.UnloadSceneAsync("DungeonScene");
+        SceneManager.LoadSceneAsync("BattleScene");
         ResetEncounterSteps();
     }
 

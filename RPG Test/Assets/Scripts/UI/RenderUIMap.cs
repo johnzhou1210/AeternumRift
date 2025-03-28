@@ -6,10 +6,11 @@ using UnityEngine.UI;
 public class RenderUIMap : MonoBehaviour {
    [SerializeField] private GameObject playerMarker, mapMarker;
    [SerializeField] private GameObject fullMapUI;
-
-   [SerializeField] private GameObject layoutPrefab;
+   
    [SerializeField] private GameObject cellUIPrefab;
-   [SerializeField] private GameObject playerObject;
+   
+   private GameObject layoutPrefab;
+   private GameObject playerObject;
 
    [SerializeField] public float MinMapScale { get; private set; } = .5f;
    [SerializeField] public float MaxMapScale { get; private set; } = 6f;
@@ -63,7 +64,7 @@ public class RenderUIMap : MonoBehaviour {
       
       
       // Place player marker
-      Vector2Int playerPos = new((int)playerObject.transform.localPosition.x, (int)playerObject.transform.localPosition.z);
+      Vector2Int playerPos = new((int)PlayerDungeonInputManager.Instance.PlayerTransform.localPosition.x, (int)PlayerDungeonInputManager.Instance.PlayerTransform.localPosition.z);
       Transform playerMarkerParent = fullMapUI.transform.Find(playerPos.x + ", " + playerPos.y).Find("EntityMarkerLayer");
       currPlayerMarker = Instantiate(playerMarker, playerMarkerParent);
       PlayerDungeonInputManager.OnUpdatePlayerMarkerPosition += UpdatePlayerMarkerPosition;

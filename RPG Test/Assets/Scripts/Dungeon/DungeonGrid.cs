@@ -146,4 +146,24 @@ public class DungeonGrid {
         throw new Exception("Could not evaluate direction string");
     }
 
+
+    public Vector3 ConvertDirectionToEulerAngles(Direction dir) {
+        switch (dir) {
+            case Direction.North:
+                return new(0, 0, 0);
+            break;
+            case Direction.South:
+                return new(0, 180, 0);
+            break;
+            case Direction.East:
+                return new(0, 90, 0);
+            break;
+            case Direction.West:
+                return new(0, 0, 270);
+            break;
+        }
+
+        throw new InvalidEnumArgumentException("Invalid direction enum!");
+    }
+    
 }
