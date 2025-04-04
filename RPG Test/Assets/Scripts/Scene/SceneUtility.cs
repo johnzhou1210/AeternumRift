@@ -23,6 +23,15 @@ public class SceneUtility : MonoBehaviour {
          Destroy(gameObject);
       }
    }
+
+   public void LoadScene(string sceneName, LoadSceneMode mode = LoadSceneMode.Additive) {
+      SceneManager.LoadSceneAsync(sceneName, mode);
+   }
+
+   public void UnloadScene(string sceneName) {
+      SceneManager.UnloadSceneAsync(sceneName);
+   }
+
    
    
 

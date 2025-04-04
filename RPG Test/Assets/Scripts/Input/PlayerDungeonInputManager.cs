@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using DG.Tweening;
 using KBCore.Refs;
 using UnityEngine;
@@ -13,7 +14,6 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     
     [SerializeField, Self] private PlayerInput playerInput;
     [SerializeField] private float movementCooldown = .5f;
-    [SerializeField] private Vector2Int minMaxStepsForEncounter = new(15, 30);
 
     private InputAction wasdAction;
     private InputAction strafeLeftAction, strafeRightAction;
@@ -30,7 +30,6 @@ public class PlayerDungeonInputManager : MonoBehaviour {
 
     private float movementTimer = 0f, fullMapGridLastSize = 1f;
     private Vector3 minimapLastPosition, fullMapGridLastPosition = Vector3.zero;
-    private int stepsUntilEncounter = 0, currentEncounterTotalRequiredSteps;
     
     
     private void OnValidate() {
@@ -47,7 +46,6 @@ public class PlayerDungeonInputManager : MonoBehaviour {
             mapZoomOutAction = playerInput.actions["ZoomOut"];
             panMapAction = playerInput.actions["PanMap"];
             toggleMapViewAction = playerInput.actions["ToggleMapView"];
-            ResetEncounterSteps();
             
         } else {
             Destroy(this);
@@ -55,7 +53,7 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void Start() {
-        PlayerTransform = GameObject.FindWithTag("Player").transform;
+        StartCoroutine(FindPlayerObj());
         toggleMapViewAction.performed += OnToggleMapView;
     }
 
@@ -63,6 +61,19 @@ public class PlayerDungeonInputManager : MonoBehaviour {
         toggleMapViewAction.performed -= OnToggleMapView;
     }
 
+    void OnEnable() {
+        StartCoroutine(FindPlayerObj());
+    }
+
+
+    private IEnumerator FindPlayerObj() {
+        yield return new WaitUntil(() => {
+            print(GameObject.FindGameObjectWithTag("Player"));
+            return GameObject.FindGameObjectWithTag("Player") != null;
+        });
+        PlayerTransform = GameObject.FindWithTag("Player").transform;
+    }
+    
 
     private DungeonGrid GetGrid() {
         return MapManager.Instance.CurrentMap;
@@ -70,6 +81,7 @@ public class PlayerDungeonInputManager : MonoBehaviour {
 
 
     private void OnWASDAction() {
+        if (PlayerTransform == null) return;
         if (movementTimer < movementCooldown) return;
         movementTimer = 0f;
         if (wasdAction.ReadValue<Vector2>().x < 0) {
@@ -84,22 +96,26 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void OnStrafeLeftAction() {
+        if (PlayerTransform == null) return;
         if (movementTimer < movementCooldown) return;
         movementTimer = 0f;
         StrafeLeft();
     }
 
     private void OnStrafeRightAction() {
+        if (PlayerTransform == null) return;
         if (movementTimer < movementCooldown) return;
         movementTimer = 0f;
         StrafeRight();
     }
 
     private void RotateLeft() {
+        if (PlayerTransform == null) return;
         PlayerTransform.DOLocalRotate(new Vector3(0, PlayerTransform.rotation.eulerAngles.y - 90, 0), movementCooldown, RotateMode.Fast).OnComplete(OnRotateComplete);
     }
 
     private void RotateRight() {
+        if (PlayerTransform == null) return;
         PlayerTransform.DOLocalRotate(new Vector3(0, PlayerTransform.rotation.eulerAngles.y + 90, 0), movementCooldown, RotateMode.Fast).OnComplete(OnRotateComplete);
     }
 
@@ -160,23 +176,24 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     private void OnMoveComplete() {
         if (OnUpdatePlayerMarkerPosition != null)
             OnUpdatePlayerMarkerPosition.Invoke(new(Mathf.RoundToInt(PlayerTransform.localPosition.x), Mathf.RoundToInt(PlayerTransform.localPosition.z)));
-        stepsUntilEncounter -= 1;
-        if (stepsUntilEncounter <= 0) StartBattle();
+
+        EncounterManager.Instance.IncrementStep();
+        
         Image minimapImage = minimapContainer.GetComponent<Image>();
         if (minimapImage == null) return;
-        if (stepsUntilEncounter >= currentEncounterTotalRequiredSteps * .85f) {
+        if (EncounterManager.Instance.StepsUntilEncounter >= EncounterManager.Instance.CurrentEncounterTotalRequiredSteps * .85f) {
             minimapImage.DOColor(new(0 / 255f, 0 / 255f, 60 / 255f, 183 / 255f), 1f);
             Debug.LogWarning("blue");
-        } else if (stepsUntilEncounter >= currentEncounterTotalRequiredSteps * .7f) {
+        } else if (EncounterManager.Instance.StepsUntilEncounter >= EncounterManager.Instance.CurrentEncounterTotalRequiredSteps * .7f) {
             minimapImage.DOColor(new(0/255f, 60/255f, 60/255f, 183/255f), 1f);
             Debug.LogWarning("teal");
-        } else if (stepsUntilEncounter >= currentEncounterTotalRequiredSteps * .5f) {
+        } else if (EncounterManager.Instance.StepsUntilEncounter >= EncounterManager.Instance.CurrentEncounterTotalRequiredSteps * .5f) {
             minimapImage.DOColor(new(30/255f, 60/255f, 0/255f, 183/255f), 1f);
             Debug.LogWarning("green");
-        } else if (stepsUntilEncounter >= currentEncounterTotalRequiredSteps * .33f) {
+        } else if (EncounterManager.Instance.StepsUntilEncounter >= EncounterManager.Instance.CurrentEncounterTotalRequiredSteps * .33f) {
             minimapImage.DOColor(new(60/255f, 60/255f, 0/255f, 183/255f), 1f);
             Debug.LogWarning("yellow");
-        } else if (stepsUntilEncounter >= currentEncounterTotalRequiredSteps * .20f) {
+        } else if (EncounterManager.Instance.StepsUntilEncounter >= EncounterManager.Instance.CurrentEncounterTotalRequiredSteps * .20f) {
             minimapImage.DOColor(new(60/255f, 30/255f, 0/255f, 183/255f), 1f);
             Debug.LogWarning("orange");
         } else {
@@ -241,6 +258,8 @@ public class PlayerDungeonInputManager : MonoBehaviour {
         if (movementTimer < movementCooldown) {
             movementTimer += Time.deltaTime;
         }
+        
+        if (GameStateManager.Instance.CurrentGameState != GameState.ABYSS) return;
 
         if (wasdAction.IsPressed()) {
             OnWASDAction();
@@ -260,22 +279,5 @@ public class PlayerDungeonInputManager : MonoBehaviour {
         
     }
 
-
-    #region Random Encounters
-
-    private void ResetEncounterSteps() {
-        stepsUntilEncounter = Random.Range(minMaxStepsForEncounter.x, minMaxStepsForEncounter.y + 1);
-        currentEncounterTotalRequiredSteps = stepsUntilEncounter;
-    }
-
-    private void StartBattle() {
-        Debug.LogWarning("Battle starts!");
-        AudioManager.Instance.PlayMusic(Resources.Load<AudioClip>("Audio/MUSIC/Strife"));
-        SceneManager.UnloadSceneAsync("DungeonScene");
-        SceneManager.LoadSceneAsync("BattleScene");
-        ResetEncounterSteps();
-    }
-
-    #endregion
     
 }

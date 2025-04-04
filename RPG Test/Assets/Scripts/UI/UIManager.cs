@@ -5,7 +5,7 @@ public class UIManager : MonoBehaviour {
     public static UIManager Instance;
     
     #region UI References
-    [SerializeField] private GameObject BattleUI, MapUI;
+    [SerializeField] private GameObject BattleUI, MapUI, MenuUI;
     #endregion
 
     private void Awake() {

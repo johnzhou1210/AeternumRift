@@ -13278,7 +13278,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1115757063}
   - component: {fileID: 1115757062}
-  - component: {fileID: 1115757061}
   - component: {fileID: 1115757064}
   m_Layer: 0
   m_Name: Main Camera
@@ -13287,14 +13286,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1115757061
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115757060}
-  m_Enabled: 1
 --- !u!20 &1115757062
 Camera:
   m_ObjectHideFlags: 0
@@ -14055,9 +14046,7 @@ MonoBehaviour:
   playerMarker: {fileID: 6801448281931047436, guid: 76d426009e08c4448aa74cbb732be5a4, type: 3}
   mapMarker: {fileID: 6801448281931047436, guid: 90b4ee7dd1b01764d9477625888b44cf, type: 3}
   fullMapUI: {fileID: 1002919241}
-  layoutPrefab: {fileID: 0}
   cellUIPrefab: {fileID: 7868701037509054942, guid: 775116278f34fd84495616eac37e8dc1, type: 3}
-  playerObject: {fileID: 0}
 --- !u!1 &1180863621
 GameObject:
   m_ObjectHideFlags: 0

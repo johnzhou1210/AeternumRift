@@ -173,7 +173,7 @@ GameObject:
   - component: {fileID: 6329344286836486314}
   - component: {fileID: 8191212618233963058}
   - component: {fileID: 5797226745996400006}
-  - component: {fileID: 3816086638402608074}
+  - component: {fileID: 76288088237200109}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -271,7 +271,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!81 &3816086638402608074
+--- !u!81 &76288088237200109
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
