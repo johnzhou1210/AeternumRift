@@ -1226,7 +1226,7 @@
             "id": "b4c54091-88db-4669-9ae1-aa0af0ee98fc",
             "actions": [
                 {
-                    "name": "New action",
+                    "name": "CloseMenu",
                     "type": "Button",
                     "id": "0cb72b4e-dfb7-44e3-9a73-9bf526037994",
                     "expectedControlType": "",
@@ -1243,18 +1243,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "New action",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "e3789351-8ecd-4bb5-8ec9-ffe005dd038d",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "New action",
+                    "action": "CloseMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

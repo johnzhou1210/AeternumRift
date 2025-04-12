@@ -17,7 +17,7 @@ public class PlayerDungeonInputManager : MonoBehaviour {
 
     private InputAction wasdAction;
     private InputAction strafeLeftAction, strafeRightAction;
-    private InputAction mapZoomInAction, mapZoomOutAction, panMapAction, toggleMapViewAction;
+    InputAction mapZoomInAction, mapZoomOutAction, panMapAction, toggleMapViewAction, openMenuAction;
 
     public Transform PlayerTransform { get; private set; }
 
