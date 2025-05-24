@@ -8271,9 +8271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fd61c7d256af624b924b33195e0e80f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BattleUI: {fileID: 153813573}
-  MapUI: {fileID: 1171112849}
-  MenuUI: {fileID: 1950299408}
+  UIElements: []
 --- !u!1 &781957132
 GameObject:
   m_ObjectHideFlags: 0

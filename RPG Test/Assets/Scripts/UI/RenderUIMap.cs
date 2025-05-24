@@ -10,7 +10,6 @@ public class RenderUIMap : MonoBehaviour {
    [SerializeField] private GameObject cellUIPrefab;
    
    private GameObject layoutPrefab;
-   private GameObject playerObject;
 
    [SerializeField] public float MinMapScale { get; private set; } = .5f;
    [SerializeField] public float MaxMapScale { get; private set; } = 6f;
@@ -18,7 +17,8 @@ public class RenderUIMap : MonoBehaviour {
 
    private GameObject currPlayerMarker;
    private Sprite[] wallSpriteAtlas;
-   
+
+
    private void Start() {
       PopulateGrid();
       
@@ -64,7 +64,7 @@ public class RenderUIMap : MonoBehaviour {
       
       
       // Place player marker
-      Vector2Int playerPos = new((int)PlayerDungeonInputManager.Instance.PlayerTransform.localPosition.x, (int)PlayerDungeonInputManager.Instance.PlayerTransform.localPosition.z);
+      Vector2Int playerPos = new((int)(PlayerInputFuncs.GetPlayerTransform.Invoke()).localPosition.x, (int)(PlayerInputFuncs.GetPlayerTransform.Invoke()).localPosition.z);
       Transform playerMarkerParent = fullMapUI.transform.Find(playerPos.x + ", " + playerPos.y).Find("EntityMarkerLayer");
       currPlayerMarker = Instantiate(playerMarker, playerMarkerParent);
       PlayerDungeonInputManager.OnUpdatePlayerMarkerPosition += UpdatePlayerMarkerPosition;

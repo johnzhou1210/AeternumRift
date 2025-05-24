@@ -9,15 +9,13 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class PlayerDungeonInputManager : MonoBehaviour {
-    public static PlayerDungeonInputManager Instance;
-    
     
     [SerializeField, Self] private PlayerInput playerInput;
     [SerializeField] private float movementCooldown = .5f;
 
     private InputAction wasdAction;
     private InputAction strafeLeftAction, strafeRightAction;
-    InputAction mapZoomInAction, mapZoomOutAction, panMapAction, toggleMapViewAction, openMenuAction;
+    private InputAction mapZoomInAction, mapZoomOutAction, panMapAction, toggleMapViewAction, openMenuAction;
 
     public Transform PlayerTransform { get; private set; }
 
@@ -37,19 +35,13 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void Awake() {
-        if (Instance == null) {
-            Instance = this;
-            wasdAction = playerInput.actions["Move"];
-            strafeLeftAction = playerInput.actions["StrafeLeft"];
-            strafeRightAction = playerInput.actions["StrafeRight"];
-            mapZoomInAction = playerInput.actions["ZoomIn"];
-            mapZoomOutAction = playerInput.actions["ZoomOut"];
-            panMapAction = playerInput.actions["PanMap"];
-            toggleMapViewAction = playerInput.actions["ToggleMapView"];
-            
-        } else {
-            Destroy(this);
-        }
+        wasdAction = playerInput.actions["Move"];
+        strafeLeftAction = playerInput.actions["StrafeLeft"];
+        strafeRightAction = playerInput.actions["StrafeRight"];
+        mapZoomInAction = playerInput.actions["ZoomIn"];
+        mapZoomOutAction = playerInput.actions["ZoomOut"];
+        panMapAction = playerInput.actions["PanMap"];
+        toggleMapViewAction = playerInput.actions["ToggleMapView"];
     }
 
     private void Start() {
@@ -64,6 +56,10 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     void OnEnable() {
         StartCoroutine(FindPlayerObj());
     }
+    
+    void OnDisable() {
+        PlayerInputFuncs.GetPlayerTransform = null;
+    }
 
 
     private IEnumerator FindPlayerObj() {
@@ -72,6 +68,7 @@ public class PlayerDungeonInputManager : MonoBehaviour {
             return GameObject.FindGameObjectWithTag("Player") != null;
         });
         PlayerTransform = GameObject.FindWithTag("Player").transform;
+        PlayerInputFuncs.GetPlayerTransform = () => PlayerTransform;
     }
     
 
