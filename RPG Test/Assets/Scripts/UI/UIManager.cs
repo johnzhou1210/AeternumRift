@@ -17,13 +17,13 @@ public class UIManager : MonoBehaviour {
         }
     }
 
-    public void SetActiveUI(GameObject uiObj, bool activeVal, bool allowStacking = false) {
+    public void SetActiveUI(int indx, bool activeVal, bool allowStacking = false) {
         if (!allowStacking) {
             foreach (GameObject obj in UIElements) {
                 obj.SetActive(false);
             }
         }
-        uiObj.SetActive(activeVal);
+        UIElements[indx].SetActive(activeVal);
     }
     
 }

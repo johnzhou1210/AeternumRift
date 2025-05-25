@@ -7,6 +7,7 @@ public class MapManager : MonoBehaviour
    public static MapManager Instance;
    public static readonly int GRID_SIZE = 41;
    [SerializeField] private GameObject layoutPrefab;
+   private bool mapReady = false;
 
    private void Awake() {
       if (Instance == null) {
@@ -18,6 +19,14 @@ public class MapManager : MonoBehaviour
 
    private void Start() {
       CurrentMap = ImportMap(layoutPrefab);
+   }
+
+   private void OnEnable() {
+      DungeonMapFuncs.IsDungeonMapReady = () => mapReady;
+   }
+
+   private void OnDisable() {
+      DungeonMapFuncs.IsDungeonMapReady = null;
    }
 
    public DungeonGrid CurrentMap { get; private set; }
@@ -49,6 +58,8 @@ public class MapManager : MonoBehaviour
          
       }
 
+      mapReady = true;
+      
       return importedMap;
    }
 

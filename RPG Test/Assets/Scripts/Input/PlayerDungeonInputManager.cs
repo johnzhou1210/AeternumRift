@@ -8,8 +8,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class PlayerDungeonInputManager : MonoBehaviour {
-    
+public class PlayerDungeonInputManager : MonoBehaviour, IInputManager {
+    public bool Active { get; set; } = false;
     [SerializeField, Self] private PlayerInput playerInput;
     [SerializeField] private float movementCooldown = .5f;
 
@@ -46,21 +46,30 @@ public class PlayerDungeonInputManager : MonoBehaviour {
 
     private void Start() {
         StartCoroutine(FindPlayerObj());
-        toggleMapViewAction.performed += OnToggleMapView;
-    }
-
-    private void OnDestroy() {
-        toggleMapViewAction.performed -= OnToggleMapView;
+        
     }
 
     void OnEnable() {
         StartCoroutine(FindPlayerObj());
+
+        PlayerInputEvents.OnSetMinimapView += SetMinimapView;
+
     }
     
     void OnDisable() {
+        PlayerInputEvents.OnSetMinimapView -= SetMinimapView;
+        
         PlayerInputFuncs.GetPlayerTransform = null;
     }
 
+    private void SetMinimapView(bool val) {
+        if (val) {
+            SendBackToMinimap();
+        } else {
+            ShowFullMap();
+        }
+    }
+    
 
     private IEnumerator FindPlayerObj() {
         yield return new WaitUntil(() => {
@@ -173,24 +182,26 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     private void OnMoveComplete() {
         if (OnUpdatePlayerMarkerPosition != null)
             OnUpdatePlayerMarkerPosition.Invoke(new(Mathf.RoundToInt(PlayerTransform.localPosition.x), Mathf.RoundToInt(PlayerTransform.localPosition.z)));
-
-        EncounterManager.Instance.IncrementStep();
+        
+        EncounterEvents.InvokeOnIncrementStep();
+        int stepsUntilEncounter = EncounterFuncs.GetStepsUntilEncounter?.Invoke() ?? -1;
+        int currentEncounterTotalRequiredSteps = EncounterFuncs.GetCurrentEncounterTotalRequiredSteps?.Invoke() ?? -1;
         
         Image minimapImage = minimapContainer.GetComponent<Image>();
         if (minimapImage == null) return;
-        if (EncounterManager.Instance.StepsUntilEncounter >= EncounterManager.Instance.CurrentEncounterTotalRequiredSteps * .85f) {
+        if (stepsUntilEncounter >= currentEncounterTotalRequiredSteps * .85f) {
             minimapImage.DOColor(new(0 / 255f, 0 / 255f, 60 / 255f, 183 / 255f), 1f);
             Debug.LogWarning("blue");
-        } else if (EncounterManager.Instance.StepsUntilEncounter >= EncounterManager.Instance.CurrentEncounterTotalRequiredSteps * .7f) {
+        } else if (stepsUntilEncounter >= currentEncounterTotalRequiredSteps * .7f) {
             minimapImage.DOColor(new(0/255f, 60/255f, 60/255f, 183/255f), 1f);
             Debug.LogWarning("teal");
-        } else if (EncounterManager.Instance.StepsUntilEncounter >= EncounterManager.Instance.CurrentEncounterTotalRequiredSteps * .5f) {
+        } else if (stepsUntilEncounter >= currentEncounterTotalRequiredSteps * .5f) {
             minimapImage.DOColor(new(30/255f, 60/255f, 0/255f, 183/255f), 1f);
             Debug.LogWarning("green");
-        } else if (EncounterManager.Instance.StepsUntilEncounter >= EncounterManager.Instance.CurrentEncounterTotalRequiredSteps * .33f) {
+        } else if (stepsUntilEncounter >= currentEncounterTotalRequiredSteps * .33f) {
             minimapImage.DOColor(new(60/255f, 60/255f, 0/255f, 183/255f), 1f);
             Debug.LogWarning("yellow");
-        } else if (EncounterManager.Instance.StepsUntilEncounter >= EncounterManager.Instance.CurrentEncounterTotalRequiredSteps * .20f) {
+        } else if (stepsUntilEncounter >= currentEncounterTotalRequiredSteps * .20f) {
             minimapImage.DOColor(new(60/255f, 30/255f, 0/255f, 183/255f), 1f);
             Debug.LogWarning("orange");
         } else {
@@ -226,23 +237,33 @@ public class PlayerDungeonInputManager : MonoBehaviour {
         if (!context.performed) return; 
         if (!MapLockedToMinimap()) {
             // Send back to minimap
-            fullMapGridLastPosition = fullMapGrid.GetComponent<RectTransform>().localPosition;
-            fullMapGridLastSize = fullMapGrid.GetComponent<RectTransform>().localScale.x;
-            fullMap.transform.SetParent(minimapContainer.transform, false);
-            fullMap.GetComponent<RectTransform>().localScale = Vector3.one * .93f;
-            fullMapGrid.GetComponent<RectTransform>().localScale = Vector3.one;
-            fullMapGrid.GetComponent<RectTransform>().localPosition = Vector3.zero;
+           SendBackToMinimap();
         } else {
             // Show full map
-            minimapLastPosition = fullMap.GetComponent<RectTransform>().localPosition;
-            fullMap.transform.SetParent(fullMapContainer.transform, false);
-            fullMap.transform.SetAsLastSibling();
-            fullMapGrid.GetComponent<RectTransform>().localScale = Vector3.one * fullMapGridLastSize;
-            fullMapGrid.GetComponent<RectTransform>().localPosition = fullMapGridLastPosition;
-            fullMap.GetComponent<RectTransform>().localScale = Vector3.one;
+            ShowFullMap();
         }
     }
 
+    private void SendBackToMinimap() {
+        if (fullMap.transform.parent == minimapContainer.transform) return;
+        fullMapGridLastPosition = fullMapGrid.GetComponent<RectTransform>().localPosition;
+        fullMapGridLastSize = fullMapGrid.GetComponent<RectTransform>().localScale.x;
+        fullMap.transform.SetParent(minimapContainer.transform, false);
+        fullMap.GetComponent<RectTransform>().localScale = Vector3.one * .93f;
+        fullMapGrid.GetComponent<RectTransform>().localScale = Vector3.one;
+        fullMapGrid.GetComponent<RectTransform>().localPosition = Vector3.zero;
+    }
+
+    private void ShowFullMap() {
+        if (fullMap.transform.parent == fullMapContainer.transform) return;
+        minimapLastPosition = fullMap.GetComponent<RectTransform>().localPosition;
+        fullMap.transform.SetParent(fullMapContainer.transform, false);
+        fullMap.transform.SetAsLastSibling();
+        fullMapGrid.GetComponent<RectTransform>().localScale = Vector3.one * fullMapGridLastSize;
+        fullMapGrid.GetComponent<RectTransform>().localPosition = fullMapGridLastPosition;
+        fullMap.GetComponent<RectTransform>().localScale = Vector3.one;
+    }
+    
     private bool MapLockedToMinimap() {
         return fullMap.transform.parent == minimapContainer.transform;
     }
@@ -252,6 +273,7 @@ public class PlayerDungeonInputManager : MonoBehaviour {
     }
 
     private void Update() {
+        if (!Active) return;
         if (movementTimer < movementCooldown) {
             movementTimer += Time.deltaTime;
         }
@@ -276,5 +298,13 @@ public class PlayerDungeonInputManager : MonoBehaviour {
         
     }
 
-    
+
+    public void Enable() {
+        Active = true;
+        toggleMapViewAction.performed += OnToggleMapView;
+    }
+    public void Disable() {
+        Active = false;
+        toggleMapViewAction.performed -= OnToggleMapView;
+    }
 }

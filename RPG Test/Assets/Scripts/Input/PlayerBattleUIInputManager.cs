@@ -15,25 +15,26 @@ public enum WheelAction {
     Flee
 }
 
-public class PlayerBattleUIInputManager : MonoBehaviour {
+public class PlayerBattleUIInputManager : MonoBehaviour, IInputManager {
+    public bool Active { get; set; } = false;
     public WheelAction currentWheelAction { get; private set; } = 0;
     [SerializeField, Self] private PlayerInput playerInput;
     [SerializeField] private float navigateCooldown = .25f;
 
-    [Header("Wheel UI Objects")] 
-    [SerializeField] private GameObject actionWheelContainer;
+    [Header("Wheel UI Objects")] [SerializeField]
+    private GameObject actionWheelContainer;
+
     [SerializeField] private RectTransform rotatableWheel;
     [SerializeField] private GameObject activeActionHighlight;
     [SerializeField] private GameObject wheelPointerContainer;
     [SerializeField] private TextMeshProUGUI activeWheelActionText;
-    
+
     [SerializeField] private GameObject wheelAttackActive, wheelAttackInactive;
     [SerializeField] private GameObject wheelSkillActive, wheelSkillInactive;
     [SerializeField] private GameObject wheelItemActive, wheelItemInactive;
     [SerializeField] private GameObject wheelDefendActive, wheelDefendInactive;
     [SerializeField] private GameObject wheelFleeActive, wheelFleeInactive;
-    
-    
+
 
     private List<WheelAction> wheelActions = new List<WheelAction> {
         WheelAction.Attack,
@@ -58,8 +59,6 @@ public class PlayerBattleUIInputManager : MonoBehaviour {
         navigateAction = playerInput.actions["Navigate"];
     }
 
-    private void Start() { submitAction.performed += OnSubmit; }
-
 
     private void OnSubmit(InputAction.CallbackContext context) {
         if (context.performed) {
@@ -67,9 +66,9 @@ public class PlayerBattleUIInputManager : MonoBehaviour {
         }
     }
 
-    private void OnDisable() { submitAction.performed -= OnSubmit; }
-
     private void Update() {
+        if (!Active) return;
+
         if (navigateTimer < navigateCooldown) {
             navigateTimer += Time.deltaTime;
         }
@@ -87,14 +86,20 @@ public class PlayerBattleUIInputManager : MonoBehaviour {
 
         if (navigateAction.ReadValue<Vector2>().y > 0) {
             Debug.Log("Navigate up action triggered!");
-            currentWheelAction = wheelActions[(int)currentWheelAction + 1 == wheelActions.Count ? 0 : (int)currentWheelAction + 1];
-            Debug.Log(72f * (int)currentWheelAction);
-            
-            rotatableWheel.DOLocalRotate(new Vector3(0, 0, 72f * (int)currentWheelAction), .175f, RotateMode.Fast).SetEase(Ease.OutBack).OnComplete(OnRotateWheelComplete).OnStart(OnRotateWheelStart);
+            currentWheelAction =
+                wheelActions[(int)currentWheelAction + 1 == wheelActions.Count ? 0 : (int)currentWheelAction + 1];
+
+
+            rotatableWheel.DOLocalRotate(new Vector3(0, 0, 0f +
+                                                           (72f * (int)currentWheelAction)), .175f, RotateMode.Fast)
+                .SetEase(Ease.OutBack).OnComplete(OnRotateWheelComplete).OnStart(OnRotateWheelStart);
         } else if (navigateAction.ReadValue<Vector2>().y < 0) {
             Debug.Log("Navigate down action triggered!");
-            currentWheelAction = wheelActions[(int)currentWheelAction - 1 == -1 ? wheelActions.Count - 1 : (int)currentWheelAction - 1];
-            rotatableWheel.DOLocalRotate(new Vector3(0, 0, 72f * (int)currentWheelAction), .175f, RotateMode.Fast).SetEase(Ease.OutBack).OnComplete(OnRotateWheelComplete).OnStart(OnRotateWheelStart);
+            currentWheelAction =
+                wheelActions[(int)currentWheelAction - 1 == -1 ? wheelActions.Count - 1 : (int)currentWheelAction - 1];
+            rotatableWheel.DOLocalRotate(new Vector3(0, 0, 0f +
+                                                           (72f * (int)currentWheelAction)), .175f, RotateMode.Fast)
+                .SetEase(Ease.OutBack).OnComplete(OnRotateWheelComplete).OnStart(OnRotateWheelStart);
         } else if (navigateAction.ReadValue<Vector2>().x > 0) {
             Debug.Log("Navigate left action triggered!");
         } else if (navigateAction.ReadValue<Vector2>().x < 0) {
@@ -103,12 +108,14 @@ public class PlayerBattleUIInputManager : MonoBehaviour {
     }
 
     private void OnRotateWheelStart() {
-        AudioManager.Instance.PlaySFXAtPointUI(Resources.Load<AudioClip>("Audio/SFX/UI/UI_SELECT"), Random.Range(1.4f,1.6f));
+        AudioManager.Instance.PlaySFXAtPointUI(Resources.Load<AudioClip>("Audio/SFX/UI/UI_SELECT"),
+            Random.Range(1.4f, 1.6f));
         activeActionHighlight.SetActive(false);
         SetAllWheelItemsInactive();
     }
-    
+
     private void OnRotateWheelComplete() {
+        print("current action: " + currentWheelAction);
         activeActionHighlight.SetActive(true);
         switch ((int)currentWheelAction) {
             case 0:
@@ -135,11 +142,35 @@ public class PlayerBattleUIInputManager : MonoBehaviour {
     }
 
     private void SetAllWheelItemsInactive() {
-        wheelAttackActive.SetActive(false); wheelAttackInactive.SetActive(true);
-        wheelSkillActive.SetActive(false); wheelSkillInactive.SetActive(true);
-        wheelItemActive.SetActive(false); wheelItemInactive.SetActive(true);
-        wheelDefendActive.SetActive(false); wheelDefendInactive.SetActive(true);
-        wheelFleeActive.SetActive(false); wheelFleeInactive.SetActive(true);
+        wheelAttackActive.SetActive(false);
+        wheelAttackInactive.SetActive(true);
+        wheelSkillActive.SetActive(false);
+        wheelSkillInactive.SetActive(true);
+        wheelItemActive.SetActive(false);
+        wheelItemInactive.SetActive(true);
+        wheelDefendActive.SetActive(false);
+        wheelDefendInactive.SetActive(true);
+        wheelFleeActive.SetActive(false);
+        wheelFleeInactive.SetActive(true);
+    }
+
+    public void Enable() {
+        PlayerInputEvents.InvokeOnSetMinimapView(true);
+        Invoke(nameof(SetActive),3f);
+        submitAction.performed += OnSubmit;
+    }
+
+    public void Disable() {
+        Active = false;Invoke(nameof(SetInactive),3f);
+        submitAction.performed -= OnSubmit;
+    }
+
+    private void SetActive() {
+        Active = true;
+    }
+
+    private void SetInactive() {
+        Active = false;
     }
     
 }

@@ -13,7 +13,7 @@ public class DungeonManager : MonoBehaviour {
     }
 
     void Start() {
-        EncounterManager.Instance.ResetEncounterSteps();
+        EncounterEvents.InvokeOnResetEncounterSteps();
     }
 
 

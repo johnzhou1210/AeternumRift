@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,11 +24,14 @@ public class RenderUIMap : MonoBehaviour {
       PopulateGrid();
       
       wallSpriteAtlas = Resources.LoadAll<Sprite>("UI/SpriteAtlasses/wall-combinations");
-      
-      Invoke(nameof(InitializeMapContent), 1f);
-      
 
+      StartCoroutine(RenderMapWhenReady());
 
+   }
+
+   private IEnumerator RenderMapWhenReady() {
+      yield return new WaitUntil(() =>  (DungeonMapFuncs.IsDungeonMapReady?.Invoke() ?? false) );
+      InitializeMapContent();
    }
 
    private void InitializeMapContent() {
